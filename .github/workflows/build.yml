@@ -1,34 +1,33 @@
 name: Build AenoVIP APK
 
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:  # 允许手动触发打包
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
-      # 自动下载 Gradle 并处理权限，完全避开 gradlew 不存在的问题
-      - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          arguments: 'assembleDebug'
+      - name: Download Gradle Wrapper automatically
+        run: |
+          gradle wrapper --gradle-version 8.5
 
-      # 打包完成后上传 APK，方便下载
+      - name: Grant permission
+        run: chmod +x gradlew
+
+      - name: Build APK
+        run: ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: aenovip-debug-apk
-          path: '**/build/outputs/apk/debug/*.apk'
+          name: app-debug-apk
+          path: "**/build/outputs/apk/debug/*.apk"
           
