@@ -1,8 +1,6 @@
-name: Build AENO VIP
+name: Build APK
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch
 
 jobs:
   build:
@@ -16,19 +14,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Gradle 7.2
-        run: |
-          wget https://services.gradle.org/distributions/gradle-7.2-bin.zip
-          unzip -q gradle-7.2-bin.zip
-          sudo mv gradle-7.2 /opt/gradle
-          sudo rm -f /usr/bin/gradle
-          sudo ln -s /opt/gradle/bin/gradle /usr/bin/gradle
+      # 第一步：先生成 gradlew（呢个先会创造到文件）
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.5
 
+      # 第二步：先至 chmod（而家文件已经存在）
+      - name: Make executable
+        run: chmod +x gradlew
+
+      # 第三步：先至 build
       - name: Build APK
-        run: gradle assembleRelease
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: AENO-FINAL-APK
-          path: '**/build/outputs/apk/release/*.apk'
+          name: app-debug
+          path: '**/build/outputs/apk/debug/*.apk'
+          
