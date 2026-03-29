@@ -15,13 +15,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Download Gradle Wrapper automatically
-        run: |
-          gradle wrapper --gradle-version 8.5
+      # 重点：自动下载生成 gradlew（你话要仓库自己下载）
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.4
 
-      - name: Grant permission
+      - name: Make gradlew executable
         run: chmod +x gradlew
 
+      # 用生成咗嘅 gradlew 打包
       - name: Build APK
         run: ./gradlew assembleDebug
 
@@ -29,5 +30,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: app/build/outputs/apk/debug/*.apk
           
