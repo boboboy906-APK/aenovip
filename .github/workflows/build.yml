@@ -1,4 +1,4 @@
-name: Build AenoVIP APK
+name: Build APK
 
 on:
   workflow_dispatch:
@@ -9,26 +9,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 重点：自动下载生成 gradlew（你话要仓库自己下载）
       - name: Generate Gradle Wrapper
-        run: gradle wrapper --gradle-version 8.4
+        run: gradle wrapper
 
-      - name: Make gradlew executable
+      - name: Chmod
         run: chmod +x gradlew
 
-      # 用生成咗嘅 gradlew 打包
-      - name: Build APK
+      - name: Build
         run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
           
