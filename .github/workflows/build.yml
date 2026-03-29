@@ -1,7 +1,6 @@
 name: Build APK
-
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,23 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper --gradle-version 8.4
-
-      - name: Grant execute permission
-        run: chmod +x gradlew
-
-      - name: Build APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: '**/build/outputs/apk/debug/*.apk'
+      - name: Build
+        run: |
+          java -version
