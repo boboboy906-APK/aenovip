@@ -13,14 +13,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: set up JDK 11
+    
+    # 设置 JDK 17（推荐使用与项目匹配的版本）
+    - name: set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
         cache: gradle
-
+    
+    # 关键步骤：自动检测和生成 gradlew
+    - name: Check and generate gradlew
+      run: |
+        if [ ! -f "gradlew" ]; then
+          echo "gradlew not found, generating..."
+          gradle wrapper --gradle-version 7.4 --distribution-type bin
+        else
+          echo "gradlew found, checking version..."
+          ./gradlew --version
+        fi
+    
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    
     - name: Build with Gradle
       run: ./gradlew build
