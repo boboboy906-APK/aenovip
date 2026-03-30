@@ -14,7 +14,36 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    # 设置 JDK 17（推荐使用与项目匹配的版本）
+    # 列出项目结构以调试
+    - name: List project structure
+      run: |
+        echo "=== Root directory ==="
+        ls -la
+        echo ""
+        echo "=== App directory ==="
+        ls -la app/ 2>/dev/null || echo "No app directory found"
+    
+    # 验证 Gradle 构建文件是否存在
+    - name: Validate Gradle files
+      run: |
+        if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+          echo "❌ Error: No settings.gradle found!"
+          echo "Please add the following files to your project root:"
+          echo "  - settings.gradle (or settings.gradle.kts)"
+          echo "  - build.gradle (or build.gradle.kts)"
+          echo "  - app/build.gradle"
+          exit 1
+        fi
+        
+        if [ ! -f "app/build.gradle" ] && [ ! -f "app/build.gradle.kts" ]; then
+          echo "❌ Error: No app/build.gradle found!"
+          echo "Please ensure the app module has a build.gradle file"
+          exit 1
+        fi
+        
+        echo "✅ Gradle build files validation passed"
+    
+    # 设置 JDK 17
     - name: set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -22,19 +51,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
     
-    # 关键步骤：自动检测和生成 gradlew
-    - name: Check and generate gradlew
+    # 生成或使用现有 gradlew
+    - name: Setup Gradle Wrapper
       run: |
         if [ ! -f "gradlew" ]; then
           echo "gradlew not found, generating..."
           gradle wrapper --gradle-version 7.4 --distribution-type bin
-        else
-          echo "gradlew found, checking version..."
-          ./gradlew --version
         fi
-    
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+        chmod +x gradlew
     
     - name: Build with Gradle
       run: ./gradlew build
+ 
