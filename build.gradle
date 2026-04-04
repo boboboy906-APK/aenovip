@@ -2,12 +2,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://chaquo.com/maven" }
     }
     dependencies {
-        // 修改AGP版本从7.1.2 -> 8.7.0（与Gradle 8.9兼容）
         classpath "com.android.tools.build:gradle:8.7.0"
-        classpath "com.chaquo.python:gradle:14.0.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
     }
 }
@@ -16,7 +13,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://chaquo.com/maven" }
         maven { url "https://jitpack.io" }
     }
 }
